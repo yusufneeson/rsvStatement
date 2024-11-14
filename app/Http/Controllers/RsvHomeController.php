@@ -43,12 +43,9 @@ class RsvHomeController extends Controller
 
             // return response()->download(public_path('rsv0x0ff/files/' . $name));
 
-            dump($proc->errorOutput());
-            dd($proc->output());
-
-            return back()->with('link', $name . '.csv');
+            return back()->with('rsvLink', url('rsv0x0ff/files/' . str_replace('.pdf', '.csv', $name)));
         } else {
-            dd('ERROR UPLOAD, refresh halaman ini');
+            dd('ERROR UPLOAD, refresh halaman ini atau laporkan ke developer bank mandiri');
         }
     }
 

@@ -85,6 +85,16 @@
             z-index: 99;
             background: red;
         }
+
+        .link {
+            color: #a7d0ff;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin-top: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -102,6 +112,12 @@
 
                     <button type="submit" class="button">KIRIM</button>
                 </form>
+            </div>
+
+            <div>
+                @if (Session::has('rsvLink'))
+                    <a class="link" href="{{ Session::get('rsvLink') }}">Klik Download CSV</a>
+                @endif
             </div>
         </div>
     </div>
