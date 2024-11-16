@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Process;
-use Symfony\Component\Process\Process as ProcessProcess;
 
 class RsvHomeController extends Controller
 {
@@ -30,18 +29,15 @@ class RsvHomeController extends Controller
     public function store(Request $request)
     {
         $rsv_file = $request->file('rsv');
-        $name = 'rsv_' . time() . '_pdf_' . '.' . $rsv_file->getClientOriginalExtension();
+        $name = strtolower($request->bank) . '_' . time() . '_' . preg_replace("/[^A-Za-z0-9._]/", "", str_replace(".pdf", "", $rsv_file->getClientOriginalName())) . '.' . $rsv_file->getClientOriginalExtension();
 
         if ($rsv_file->move(public_path('rsv0x0ff/files'), $name)) {
-            // $proc = new ProcessProcess(['python' . ' ' . app_path('../python/main.py', app_path('../python/' . $name))]);
-            $proc = Process::path(app_path('../python'))
+            $proc = Process::forever()->path(app_path('../'))
                 ->env([
                     'SYSTEMROOT' => getenv('SYSTEMROOT'),
                     'PATH' => getenv("PATH")
                 ])
-                ->run('C:\Users\yusuf\AppData\Local\Programs\Python\Python38\python.exe main.py ' . public_path('rsv0x0ff/files/' . $name));
-
-            // return response()->download(public_path('rsv0x0ff/files/' . $name));
+                ->run('C:\Users\yusuf\AppData\Local\Programs\Python\Python38\python.exe conv.py ' . $request->bank . ' ' . public_path('rsv0x0ff/files/' . $name));
 
             return back()->with('rsvLink', url('rsv0x0ff/files/' . str_replace('.pdf', '.csv', $name)));
         } else {
