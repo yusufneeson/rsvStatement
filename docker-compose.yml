@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+    laravel-rsv:
+        build:
+            context: .
+            dockerfile: Dockerfile.laravel
+        image: laravel-rsv
+        container_name: laravel-rsv
+        restart: unless-stopped
+        ports:
+            - "7468:80" # Aplikasi Laravel diakses di port 8000
+        volumes:
+            - .:/var/www/html # Aplikasi Laravel
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - app-network
+
+    python-rsv:
+        build:
+            context: .
+            dockerfile: Dockerfile.python
+        image: python-rsv
+        container_name: python-rsv
+        restart: unless-stopped
+        volumes:
+            - .:/usr/src/app
+        tty: true
+        networks:
+            - app-network
+        depends_on:
+            - laravel-rsv # Python akan menunggu Laravel siap dijalankan
+
+networks:
+    app-network:
+        driver: bridge
