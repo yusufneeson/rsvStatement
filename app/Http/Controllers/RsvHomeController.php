@@ -32,12 +32,14 @@ class RsvHomeController extends Controller
         $name = strtolower($request->bank) . '_' . time() . '_' . preg_replace("/[^A-Za-z0-9._]/", "", str_replace(".pdf", "", $rsv_file->getClientOriginalName())) . '.' . $rsv_file->getClientOriginalExtension();
 
         if ($rsv_file->move(public_path('rsv0x0ff/files'), $name)) {
-            $proc = Process::forever()->path(app_path('../'))
+            $proc = app()->isLocal()
+                ? Process::forever()->path(app_path('../'))
                 ->env([
                     'SYSTEMROOT' => getenv('SYSTEMROOT'),
                     'PATH' => getenv("PATH")
                 ])
-                ->run('C:\Users\yusuf\AppData\Local\Programs\Python\Python38\python.exe conv.py ' . $request->bank . ' ' . public_path('rsv0x0ff/files/' . $name));
+                ->run('C:\Users\yusuf\AppData\Local\Programs\Python\Python38\python.exe conv.py ' . $request->bank . ' ' . public_path('rsv0x0ff/files/' . $name))
+                : Process::forever()->run('sudo docker exec python-rsv python /usr/src/app/conv.py ' . $request->bank . ' /usr/src/app/public/rsv0x0ff/files/' . $name);
 
             return back()->with('rsvLink', url('rsv0x0ff/files/' . str_replace('.pdf', '.csv', $name)));
         } else {
