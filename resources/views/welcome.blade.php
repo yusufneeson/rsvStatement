@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="id">
 
+<!--
+
+ __     _______ _______      __
+ \ \   / / ____|  __ \ \    / /
+  \ \_/ / (___ | |__) \ \  / /
+   \   / \___ \|  _  / \ \/ /
+    | |  ____) | | \ \  \  /
+    |_| |_____/|_|  \_\  \/    neverending.
+                               
+                               
+Espero que esto te ayude. y que esta historia nunca termine.
+-->
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
