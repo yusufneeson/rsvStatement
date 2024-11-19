@@ -41,6 +41,7 @@ Espero que esto te ayude. y que esta historia nunca termine.
                         <select name="bank" class="form-control" required>
                             <option value="">Pilih Bank</option>
                             <option value="BCA">BCA</option>
+                            <option value="BRI">BRI</option>
                             <option value="Mandiri">Mandiri</option>
                         </select>
                     </div>
