@@ -78,10 +78,10 @@ def briRSV(file):
     number_of_pages = len(reader.pages) + 1
     
     area_first = (345, 0, 1000, 1000)
-    columns_first = [105.9, 291.9, 338.9, 446, 540.9, 690.9]
+    columns_first = [69.5, 105.9, 291.9, 338.9, 446, 540.9, 690.9]
 
     area_others = (112.9, 0, 1000, 1000)
-    columns_others = [105.9, 291.9, 338.9, 446, 540.9, 690.9]
+    columns_others = [69.5, 105.9, 291.9, 338.9, 446, 540.9, 690.9]
 
     df_first_list = tabula.read_pdf(
         file,
@@ -112,7 +112,7 @@ def briRSV(file):
 
     df_cleaned.reset_index(drop=True, inplace=True)
 
-    df_cleaned.columns = ["Tgl", "Uraian", "Teller", "Debet", "Kredit", "Saldo", "Ignore"]
+    df_cleaned.columns = ["Tgl", "Jam", "Uraian", "Teller", "Debet", "Kredit", "Saldo", "Ignore"]
 
     df_cleaned.to_csv(file.replace('.pdf', '.csv'), index=False)
 
