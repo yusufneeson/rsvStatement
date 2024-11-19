@@ -45,7 +45,7 @@ def mandiriRSV(file):
 
     df_cleaned.columns = ["Tanggal", "Keterangan", "Nomor Ref", "Debet", "Kredit", "Saldo", "Ignore"]
 
-    df_cleaned.to_excel(file.replace('.pdf', '.xlsx'), index=False)
+    df_cleaned.to_csv(file.replace('.pdf', '.csv'), index=False)
 
 def bcaRSV(file):
     area_first = (250, 0, 1000, 1000)
@@ -71,7 +71,7 @@ def bcaRSV(file):
 
     df_cleaned.columns = ["Tanggal", "Keterangan", "CBG", "Mutasi", "Saldo", "Ignore"]
 
-    df_cleaned.to_excel(file.replace('.pdf', '.xlsx'), index=False)
+    df_cleaned.to_csv(file.replace('.pdf', '.csv'), index=False)
 
 def briRSV(file):
     reader = PdfReader(file)
@@ -114,7 +114,7 @@ def briRSV(file):
 
     df_cleaned.columns = ["Tgl", "Uraian", "Teller", "Debet", "Kredit", "Saldo", "Ignore"]
 
-    df_cleaned.to_excel(file.replace('.pdf', '.xlsx'), index=False)
+    df_cleaned.to_csv(file.replace('.pdf', '.csv'), index=False)
 
 def main():
     parser = argparse.ArgumentParser(description="YSRV Converter to CSV")
