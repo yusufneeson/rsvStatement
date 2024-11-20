@@ -18,7 +18,7 @@ Espero que esto te ayude. y que esta historia nunca termine.
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>REFACTORED. BCA and Mandiri Converter</title>
+    <title>REFACTORED. BCA, BRI, and Mandiri Converter</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -31,7 +31,7 @@ Espero que esto te ayude. y que esta historia nunca termine.
     <div class="wrapper">
         <div class="box">
             <h1 class="title_head">Mutasi PDF ke CSV</h1>
-            <p class="title_desc">Sudah Support BCA dan Mandiri</p>
+            <p class="title_desc">Sudah Support BCA, BRI dan Mandiri (Rek Koran)</p>
 
             <div class="up_box">
                 <form method="POST" enctype="multipart/form-data" action="{{ route('rsv.store') }}">
