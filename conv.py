@@ -87,6 +87,8 @@ def mandiriEstatementPass(file, password):
     df_others = pd.concat(df_others_list) if isinstance(df_others_list, list) else df_others_list
 
     df = pd.concat([df_first, df_others], ignore_index=True)
+    df = df[df[0].apply(lambda x: is_date_format(x) or is_time(x) or pd.isna(x))]
+    df = df[df[1].apply(lambda x: not is_batas_akhir(x))]
     
     new_rows = {}
     index = 0
@@ -149,10 +151,10 @@ def is_date_format(string):
         return False
     return bool(re.match(r"^\d{2} \w{3} \d{4}$", str(string)))
 
-def is_date(string):
-    # Pola regex untuk tanggal seperti "02 Oct 2024"
-    pattern = r"\b\d{2} [A-Za-z]{3} \d{4}\b"
-    return bool(re.match(pattern, string))
+def is_batas_akhir(value):
+    if isinstance(value, str):
+        return bool(re.search(r'ini\s+adalah\s+batas\s+akhir', value.lower()))
+    return False
 
 def bcaRSV(file):
     area_first = (250, 0, 1000, 1000)
