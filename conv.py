@@ -1,8 +1,14 @@
 import tabula
 import pandas as pd
+import numpy as np
 from pypdf import PdfReader
 import os
 import argparse
+import re
+
+# pd.set_option('display.max_colwidth', None)
+pd.set_option('display.max_rows', None)
+# pd.set_option('display.max_columns', None)
 
 def mandiriRSV(file):
     reader = PdfReader(file)
@@ -46,6 +52,107 @@ def mandiriRSV(file):
     df_cleaned.columns = ["Tanggal", "Keterangan", "Nomor Ref", "Debet", "Kredit", "Saldo", "Ignore"]
 
     df_cleaned.to_csv(file.replace('.pdf', '.csv'), index=False)
+
+def mandiriEstatementPass(file, password):
+    reader = PdfReader(file, password=password)
+    number_of_pages = len(reader.pages) + 1
+    
+    area_first = (323.6, 43.9, 799, 1000)
+    columns_first = [114.9, 321.9, 440.8, 590.9]
+
+    area_others = (207.9, 43.9, 799, 1000)
+    columns_others = [114.9, 321.9, 440.8, 590.9]
+
+    df_first_list = tabula.read_pdf(
+        file,
+        password=password,
+        pages=1,
+        area=area_first,
+        columns=columns_first,
+        pandas_options={'header': None, "dtype": str},
+        stream=True,
+    )
+
+    df_others_list = tabula.read_pdf(
+        file,
+        password=password,
+        pages='2-'+str(number_of_pages-1),
+        area=area_others,
+        columns=columns_others,
+        pandas_options={'header': None, "dtype": str},
+        stream=True,
+    )
+
+    df_first = pd.concat(df_first_list) if isinstance(df_first_list, list) else df_first_list
+    df_others = pd.concat(df_others_list) if isinstance(df_others_list, list) else df_others_list
+
+    df = pd.concat([df_first, df_others], ignore_index=True)
+    
+    new_rows = {}
+    index = 0
+    bertemu_tgl = 0
+    bertemu_tf = 0
+    ketemu_index_unik = 0
+
+
+    df["Grp"] = 0
+    # df["Tngl"] = 0
+    # df["TF"] = 0
+
+    for i, row in df.iterrows():
+        if i > 1 and is_date_format(row[0]):
+            bertemu_tgl += 1
+
+        if "Transfer" in str(row[1]) or "Biaya" in str(row[1]):
+            if i > 1:
+                if index > bertemu_tf:
+                    index = bertemu_tf
+                else:
+                    index += 1
+                bertemu_tf += 1
+
+        if bertemu_tgl > index:
+            index = bertemu_tgl
+            ketemu_index_unik = bertemu_tgl
+
+        df.at[i, "Grp"] = index
+        
+    df.columns = ["Tanggal", "Keterangan", "Nominal", "Saldo", "Grp"]
+
+    df = df.replace('NaN', np.nan)
+    df = df.fillna("")
+
+    result = df.groupby("Grp").agg({
+        "Tanggal": lambda x: " ".join(map(str, x)).strip(),
+        "Keterangan": lambda x: " ".join(map(str, x)).strip(),
+        "Nominal": lambda x: " ".join(map(str, x)).strip(),
+        "Saldo": lambda x: " ".join(map(str, x)).strip(),
+    }).reset_index(drop=True)
+    
+    result.to_csv(file.replace('.pdf', '.csv'), index=False)
+
+
+# Fungsi untuk mendeteksi apakah awal baris baru
+def is_new_row(value):
+    if pd.isna(value):
+        return False
+    return bool(re.match(r"^(Biaya|Transfer)", value))
+
+# Fungsi untuk memeriksa apakah nilai adalah waktu
+def is_time(value):
+    if pd.isna(value):
+        return False
+    return bool(re.match(r"^\d{2}:\d{2}:\d{2} WIB$", value))
+
+def is_date_format(string):
+    if pd.isna(string):
+        return False
+    return bool(re.match(r"^\d{2} \w{3} \d{4}$", str(string)))
+
+def is_date(string):
+    # Pola regex untuk tanggal seperti "02 Oct 2024"
+    pattern = r"\b\d{2} [A-Za-z]{3} \d{4}\b"
+    return bool(re.match(pattern, string))
 
 def bcaRSV(file):
     area_first = (250, 0, 1000, 1000)
@@ -121,7 +228,7 @@ def main():
     parser.add_argument(
         "bank",
         type=str,
-        choices=["BCA", "BRI", "Mandiri"],
+        choices=["BCA", "BRI", "Mandiri", "MandiriPasswd"],
         help="Pilih bank sumber mutasi"
     )
     parser.add_argument(
@@ -129,17 +236,23 @@ def main():
         type=str,
         help="File yang akan di convert"
     )
+    parser.add_argument(
+        "paswd",
+        type=str,
+        help="Password"
+    )
 
     args = parser.parse_args()
 
     converters = {
         "BCA": bcaRSV,
         "BRI": briRSV,
-        "Mandiri": mandiriRSV
+        "Mandiri": mandiriRSV,
+        "MandiriPasswd": mandiriEstatementPass
     }
 
     if os.path.isfile(args.file_path):
-        converters[args.bank](args.file_path)
+        converters[args.bank](args.file_path, args.paswd)
     else:
         print(f"Error: File tidak ditemukan pada {args.file_path}")
 
