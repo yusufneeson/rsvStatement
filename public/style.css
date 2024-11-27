@@ -57,7 +57,7 @@ body {
     background: #1c3a5dc7;
     display: block;
     text-align: center;
-    font-size: 6px;
+    font-size: 8px;
     padding: 8px;
     color: #8094a9;
     font-weight: 400;
@@ -112,4 +112,37 @@ body {
         width: 100%;
         margin-top: 25px;
     }
+}
+
+.password .form-control {
+    border: 1px solid #3870ab;
+    border-radius: 5px;
+    padding: 8px;
+    background: #0e2a47;
+}
+
+.password {
+    text-align: center;
+    margin-bottom: 20px;
+    vertical-align: middle;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.password.show {
+    display: flex;
+}
+
+.password label {
+    color: #ffffff;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+input.form-control:focus {
+    outline: none;
+    border: 1px solid #6a98cb;
 }
