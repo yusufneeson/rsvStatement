@@ -186,10 +186,10 @@ def briRSV(file):
     reader = PdfReader(file)
     number_of_pages = len(reader.pages) + 1
     
-    area_first = (345, 0, 1000, 1000)
+    area_first = (345, 0, 790, 1000)
     columns_first = [69.5, 105.9, 291.9, 338.9, 446, 540.9, 690.9]
 
-    area_others = (112.9, 0, 1000, 1000)
+    area_others = (112.9, 0, 790, 1000)
     columns_others = [69.5, 105.9, 291.9, 338.9, 446, 540.9, 690.9]
 
     df_first_list = tabula.read_pdf(
@@ -215,6 +215,8 @@ def briRSV(file):
 
     df = pd.concat([df_first, df_others], ignore_index=True)
     df['Grup'] = df[0].notna().cumsum()
+    df = df[df[0].apply(lambda x: is_bri_date(x))]
+
     df[1] = df.groupby('Grup')[1].transform(lambda x: ' '.join(x.dropna()))
 
     df_cleaned = df[df[0].notna()]
@@ -224,6 +226,13 @@ def briRSV(file):
     df_cleaned.columns = ["Tgl", "Jam", "Uraian", "Teller", "Debet", "Kredit", "Saldo", "Ignore"]
 
     df_cleaned.to_csv(file.replace('.pdf', '.csv'), index=False)
+
+# 31/07/24
+def is_bri_date(string):
+    if pd.isna(string):
+        return False
+    pattern = r"^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{2}$"
+    return bool(re.match(pattern, string))
 
 def main():
     parser = argparse.ArgumentParser(description="YSRV Converter to CSV")
