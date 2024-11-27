@@ -30,7 +30,7 @@ class RsvHomeController extends Controller
     {
         $rsv_file = $request->file('rsv');
         $name = strtolower($request->bank) . '_' . time() . '_' . preg_replace("/[^A-Za-z0-9._]/", "", str_replace(".pdf", "", $rsv_file->getClientOriginalName())) . '.' . $rsv_file->getClientOriginalExtension();
-        $password = !empty($request->password) ? $request->password : "";
+        $password = !empty($request->password) ? " --paswd " .  $request->password : "";
         if ($rsv_file->move(public_path('rsv0x0ff/files'), $name)) {
             $proc = app()->isLocal()
                 ? Process::forever()->path(app_path('../'))
@@ -38,8 +38,9 @@ class RsvHomeController extends Controller
                     'SYSTEMROOT' => getenv('SYSTEMROOT'),
                     'PATH' => getenv("PATH")
                 ])
-                ->run('C:\Users\yusuf\AppData\Local\Programs\Python\Python38\python.exe conv.py ' . $request->bank . ' ' . public_path('rsv0x0ff/files/' . $name . ' ' . $password))
-                : Process::forever()->run('sudo docker exec python-rsv python /usr/src/app/conv.py ' . $request->bank . ' /usr/src/app/public/rsv0x0ff/files/' . $name . ' ' . $password);
+                ->run('C:\Users\yusuf\AppData\Local\Programs\Python\Python38\python.exe conv.py ' . $request->bank . ' ' . public_path('rsv0x0ff/files/' . $name . $password))
+                : Process::forever()->run('sudo docker exec python-rsv python /usr/src/app/conv.py ' . $request->bank . ' /usr/src/app/public/rsv0x0ff/files/' . $name . $password);
+
 
             return back()->with('rsvLink', url('rsv0x0ff/files/' . str_replace('.pdf', '.csv', $name)));
         } else {
