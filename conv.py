@@ -239,8 +239,9 @@ def main():
         help="File yang akan di convert"
     )
     parser.add_argument(
-        "paswd",
+        "--paswd",
         type=str,
+        default=None,
         help="Password"
     )
 
@@ -254,7 +255,10 @@ def main():
     }
 
     if os.path.isfile(args.file_path):
-        converters[args.bank](args.file_path, args.paswd)
+        if args.paswd is not None:
+            converters[args.bank](args.file_path, args.paswd)
+        else:
+            converters[args.bank](args.file_path)
     else:
         print(f"Error: File tidak ditemukan pada {args.file_path}")
 
